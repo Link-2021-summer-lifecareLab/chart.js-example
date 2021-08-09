@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset='utf-8'>
+    <meta http-equiv='X-UA-Compatible' content='IE=edge'>
+    <title>Chart.js 테스트</title>
+    <meta name='viewport' content='width=device-width, initial-scale=1'>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.css" integrity="sha512-C7hOmCgGzihKXzyPU/z4nv97W0d9bv4ALuuEbSf6hm93myico9qa0hv4dODThvCsqQUmKmLcJmlpRmCaApr83g==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.min.css" integrity="sha512-/zs32ZEJh+/EO2N1b0PEdoA10JkdC3zJ8L5FTiQu82LR9S/rOQNfQN7U59U9BC12swNeRAz3HSzIL2vpp4fv3w==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.bundle.js" integrity="sha512-zO8oeHCxetPn1Hd9PdDleg5Tw1bAaP0YmNvPY8CwcRyUk7d7/+nyElmFrB6f7vg4f7Fv4sui1mcep8RIEShczg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.bundle.min.js" integrity="sha512-SuxO9djzjML6b9w9/I07IWnLnQhgyYVSpHZx0JV97kGBfTIsUYlWflyuW4ypnvhBrslz1yJ3R+S14fdCWmSmSA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.js" integrity="sha512-hZf9Qhp3rlDJBvAKvmiG+goaaKRZA6LKUO35oK6EsM0/kjPK32Yw7URqrq3Q+Nvbbt8Usss+IekL7CRn83dYmw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.min.js" integrity="sha512-d9xgZrVZpmmQlfonhQUvTR7lMPtO7NkZMkA0ABN3PHCbKA5nqylQ/yWlFAyY6hYgdF1Qh6nYiuADWwKB4C2WSw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+</head>
+<body>
+    <div style="width:700px; height: 300px; display: inline-flex;">
+        <canvas id="plugPowerConsumption"></canvas>
+        <canvas id="plugSwitch"></canvas>
+    </div>
+    <script src='./Plug.js'></script>
+<script>
+
+getPlugStatus().then(plugData=>{
+    
+    // 전력소모량 처리
+    const plugPowerConsumption = plugData.filter(pd => pd.attribute==="powerConsumption")
+    
+    const powerConsumptionLabels = plugPowerConsumption.map(pc=>pc.value.start)
+    const powerConsumptionValues = plugPowerConsumption.map(pc=>pc.value.energy)
+
+    let pcCtx = document.getElementById('plugPowerConsumption');
+    new Chart(pcCtx, {
+        type: 'bar',
+        data: {
+            labels: powerConsumptionLabels,
+            datasets: [{
+                label: '모션 센서 감지',
+                data: powerConsumptionValues,
+                borderWidth: 3
+            }],
+        }
+    });
+
+    // 스위치 on/off 기록
+    const plugSwitch = plugData.filter(pd => pd.attribute==="switch")
+    console.log(plugSwitch)
+    const switchLabels = plugSwitch.map(ps=>ps.created)
+    const switchValues = plugSwitch.map(ps=>ps.value === 'on' ? 1 : 0)
+
+    let psCtx = document.getElementById('plugSwitch');
+    new Chart(psCtx, {
+        type: 'line',
+        data: {
+            labels: switchLabels,
+            datasets: [{
+                label: '모션 센서 감지',
+                data: switchValues,
+                borderWidth: 3,
+                showLine: false,
+                pointBorderColor: 'black'
+            }],
+        }
+    });
+    
+})
+
+
+</script>
+</body>
+</html>
